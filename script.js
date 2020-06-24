@@ -1,39 +1,63 @@
 'use strict';
 
-const DomElement = function () {
-  this.selector = '.block';
-  this.height = '200px';
-  this.width = '200px';
-  this.bg = '#78eb8a';
-  this.fontSize = '15px';
+const DomElement = function (height, width, bg, position) {
+  this.height = height;
+  this.width = width;
+  this.bg = bg;
+  this.position = position;
 };
 
 DomElement.prototype.createBlock = function () {
-  let block = '';
-  let wrapper = document.querySelector('.wrapper');
+  let block = document.createElement('div');
+  let thisMy = this;
 
-  if (this.selector[0] === '.') {
-    block = document.createElement('div');
-    block.classList.add(this.selector.slice(1));
-  }
+  this.left = 0;
+  this.top = 0;
 
-  if (this.selector[0] === '#') {
-    block = document.createElement('p');
-    block.id = this.selector.slice(1);
-  }
-
-  block.style.cssText = `
-    height: ${this.height};
-    width: ${this.width};
-    background: ${this.bg};
-    font-size: ${this.fontSize};
+  const changeStyle = function () {
+    block.style.cssText = `
+    height: ${thisMy.height};
+    width: ${thisMy.width};
+    background: ${thisMy.bg};
+    font-size: ${thisMy.fontSize};
+    position: ${thisMy.position};
+    left: ${thisMy.left}px;
+    top: ${thisMy.top}px;
   `;
+  };
 
-  block.textContent = 'внутрь созданного блока записывать любой текст. Метод записи может быть любым.';
-  wrapper.prepend(block);
+  document.addEventListener('keydown', (event) => {
+
+    const bodyWidth = document.body.scrollWidth;
+    const bodyHeight = document.body.scrollHeight;
+
+    if (event.key === 'ArrowLeft') {
+      if (this.left !== 0) this.left -= 10;
+      changeStyle();
+    }
+
+    if (event.key === 'ArrowRight') {
+      if (this.left < bodyWidth - 100) this.left += 10;
+      changeStyle();
+    }
+
+    if (event.key === 'ArrowUp') {
+      if (this.top !== 0) this.top -= 10;
+      changeStyle();
+    }
+
+    if (event.key === 'ArrowDown') {
+      if (this.top < bodyHeight - 110) this.top += 10;
+      changeStyle();
+    }
+  });
+
+  changeStyle();
+
+  document.body.prepend(block);
 };
 
+const domElement = new DomElement('100px', '100px', '#78eb8a', 'absolute');
+document.addEventListener('DOMContentLoaded', domElement.createBlock());
 
-const domElement = new DomElement();
 
-domElement.createBlock();
